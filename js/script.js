@@ -251,6 +251,17 @@ function actualizarResumen() {
     console.log(datosCarrito); //muestra en la consola el objeto del enunciado en cada cambio (para depurar y ver que obtenerCarrito está OK)
 }
 
+//Vaciar cesta: la clase pone todo a 0, actualiza cada fila, y con ella la cesta
+botonVaciar.onclick = function () {
+    if (carrito === null) { //por si la API hubiera fallado y el carrito no existe
+        return;
+    }
+    carrito.vaciarCarrito();
+    for (let i = 0; i < carrito.productos.length; i++) {
+        actualizarProducto(carrito.productos[i].sku);
+    }
+};
+
 //Función inicializar: async hace que la página siga cargando mientras esperamos
 async function inicializar() {
     //hacemos try-catch para que si algo falla, salte al catch y muestre un mensaje en vez de romperse
