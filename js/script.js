@@ -126,6 +126,74 @@ const botonVaciar = document.getElementById("botonVaciar");
 // El carrito se crea cuando lleguen los datos al responder la API
 let carrito = null;
 
+//PINTAR LOS LIBROS EN LA TABLA (Crear nuevos elementos en el DOM: listado de productos)
+function pintarProductos() {
+    tablaProductos.replaceChildren();
+
+    for (let i = 0; i < carrito.productos.length; i++) {
+        const producto = carrito.productos[i];
+        const fila = document.createElement("tr");
+
+        // Casilla 1: título, autor y referencia
+        const celdaLibro = document.createElement("td");
+
+        const titulo = document.createElement("p");
+        titulo.className = "titulo-libro";
+        titulo.innerText = producto.title;
+
+        const autor = document.createElement("p");
+        autor.className = "autor";
+        autor.innerText = producto.author;
+
+        const referencia = document.createElement("p");
+        referencia.className = "referencia";
+        referencia.innerText = "REF: " + producto.sku;
+
+        celdaLibro.appendChild(titulo);
+        celdaLibro.appendChild(autor);
+        celdaLibro.appendChild(referencia);
+
+        // Casilla 2: botón -, caja de cantidad, botón +
+        const celdaCantidad = document.createElement("td");
+        celdaCantidad.className = "celda-cantidad";
+
+        const botonMenos = document.createElement("button");
+        botonMenos.className = "boton-cantidad";
+        botonMenos.innerText = "-";
+
+        const inputCantidad = document.createElement("input");
+        inputCantidad.type = "number";
+        inputCantidad.min = "0";
+        inputCantidad.className = "input-cantidad";
+        inputCantidad.id = "cantidad-" + producto.sku;
+        inputCantidad.value = producto.quantity;
+
+        const botonMas = document.createElement("button");
+        botonMas.className = "boton-cantidad";
+        botonMas.innerText = "+";
+
+        celdaCantidad.appendChild(botonMenos);
+        celdaCantidad.appendChild(inputCantidad);
+        celdaCantidad.appendChild(botonMas);
+
+        // Casilla 3: precio por unidad
+        const celdaPrecio = document.createElement("td");
+        celdaPrecio.innerText = producto.price.toFixed(2) + carrito.moneda;
+
+        // Casilla 4: total de la línea
+        const celdaSubtotal = document.createElement("td");
+        celdaSubtotal.id = "subtotal-" + producto.sku;
+        celdaSubtotal.innerText = "0.00" + carrito.moneda;
+
+        // Metemos las casillas en la fila y la fila en una tabla:
+        fila.appendChild(celdaLibro);
+        fila.appendChild(celdaCantidad);
+        fila.appendChild(celdaPrecio);
+        fila.appendChild(celdaSubtotal);
+        tablaProductos.appendChild(fila);
+    }
+}
+
 //Función inicializar: async hace que la página siga cargando mientras esperamos
 async function inicializar() {
     //hacemos try-catch para que si algo falla, salte al catch y muestre un mensaje en vez de romperse
@@ -140,6 +208,7 @@ async function inicializar() {
         console.log(datos);
 
         carrito = new Carrito(datos.products, datos.currency);
+        pintarProductos(); //pinta una fila por cada libro
         console.log(carrito);
 
         estado.innerText = 'Libros cargados: ' + carrito.productos.length; //modificación del DOM para cambiar el texto "Cargamdo libros..."
@@ -152,6 +221,3 @@ async function inicializar() {
 }
 
 inicializar(); //única línea que se ejecuta sola al cargar
-
-//PINTAR LOS LIBROS EN LA TABLA (Crear nuevos elementos en el DOM: listado de productos)
-
