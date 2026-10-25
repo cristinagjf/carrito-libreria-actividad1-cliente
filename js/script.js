@@ -16,7 +16,7 @@ class Carrito {
             this.productos.push(producto); //añadimos el objeto al final del array
         }
     }
-        // Buscar un libro por su SKU (null si no existe): soporte para el resto de métodos
+    // Buscar un libro por su SKU (null si no existe): soporte para el resto de métodos
     buscarProducto(sku) {
         for (let i = 0; i < this.productos.length; i++) {
             if (this.productos[i].sku === sku) { //comparamos valor y tipo
@@ -26,7 +26,7 @@ class Carrito {
         return null; //Si el bucle termina sin encontrarlo, devuelve null/nada
     }
 
-        // Cambiar las unidades de un libro (nunca negativas)
+    // Cambiar las unidades de un libro (nunca negativas)
     actualizarUnidades(sku, unidades) {
         //const porque no se reasigna:
         const producto = this.buscarProducto(sku); //un método llama a otro de la misma clase con this
@@ -44,7 +44,7 @@ class Carrito {
 
     //Para los botones + y − (No repiten la lógica: llaman a actualizarUnidades que ya valida los negativos)
 
-        // Botón +
+    // Botón +
     sumarUnidad(sku) {
         const producto = this.buscarProducto(sku);
         if (producto !== null) {
@@ -52,7 +52,7 @@ class Carrito {
         }
     }
 
-        // Botón -
+    // Botón -
     restarUnidad(sku) {
         const producto = this.buscarProducto(sku);
         if (producto !== null) {
@@ -60,7 +60,7 @@ class Carrito {
         }
     }
 
-        // Vaciar carrito: Pone todas las unidades a 0:
+    // Vaciar carrito: Pone todas las unidades a 0:
 
     vaciarCarrito() {
         for (let i = 0; i < this.productos.length; i++) {
@@ -127,6 +127,7 @@ const botonVaciar = document.getElementById("botonVaciar");
 let carrito = null;
 
 //PINTAR LOS LIBROS EN LA TABLA (Crear nuevos elementos en el DOM: listado de productos)
+//Encapsulado: Los eventos solo hablan con la clase a través de los métodos
 function pintarProductos() {
     tablaProductos.replaceChildren();
 
@@ -160,6 +161,10 @@ function pintarProductos() {
         const botonMenos = document.createElement("button");
         botonMenos.className = "boton-cantidad";
         botonMenos.innerText = "-";
+        botonMenos.onclick = function () { //salta con clic y guarda una función en el botón. Se ejecuta cada vez que el cliente hace clic 
+            carrito.restarUnidad(producto.sku);
+            actualizarProducto(producto.sku);
+        };
 
         const inputCantidad = document.createElement("input");
         inputCantidad.type = "number";
@@ -167,10 +172,18 @@ function pintarProductos() {
         inputCantidad.className = "input-cantidad";
         inputCantidad.id = "cantidad-" + producto.sku;
         inputCantidad.value = producto.quantity;
+        inputCantidad.onchange = function () { //Salta al cambiar el no. o salir de la casilla
+            carrito.actualizarUnidades(producto.sku, inputCantidad.value);
+            actualizarProducto(producto.sku);
+        };
 
         const botonMas = document.createElement("button");
         botonMas.className = "boton-cantidad";
         botonMas.innerText = "+";
+        botonMas.onclick = function () { ////al hacer clic, la clase suma 1 y actualizamos la fila
+            carrito.sumarUnidad(producto.sku);
+            actualizarProducto(producto.sku);
+        };
 
         celdaCantidad.appendChild(botonMenos);
         celdaCantidad.appendChild(inputCantidad);
@@ -192,6 +205,17 @@ function pintarProductos() {
         fila.appendChild(celdaSubtotal);
         tablaProductos.appendChild(fila);
     }
+}
+
+// Actualiza la cantidad y el total de UNA fila
+function actualizarProducto(sku) {
+    const informacion = carrito.obtenerInformacionProducto(sku); //pide a la clase los datos actualizados  del libro
+
+    const inputCantidad = document.getElementById("cantidad-" + sku);
+    const celdaSubtotal = document.getElementById("subtotal-" + sku);
+
+    inputCantidad.value = informacion.quantity; //cambia lo que muestyra un input
+    celdaSubtotal.innerText = informacion.subtotal.toFixed(2) + carrito.moneda; // cambia el texto de cualquier otro elemento
 }
 
 //Función inicializar: async hace que la página siga cargando mientras esperamos
