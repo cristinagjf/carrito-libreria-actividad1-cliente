@@ -108,4 +108,24 @@ class Carrito {
             products: seleccionados //solo los libros con unidades:
         };
     }
+
 }
+
+
+    // PRUEBAS TEMPORALES:
+    
+const librosPrueba = [
+    { SKU: "AAA", title: "Libro A", author: "Autora A", price: "10.50" },
+    { SKU: "BBB", title: "Libro B", author: "Autor B", price: "4.25" }
+];
+const prueba = new Carrito(librosPrueba, "€");
+console.log(prueba.productos);
+prueba.sumarUnidad("AAA");
+prueba.sumarUnidad("AAA");
+prueba.actualizarUnidades("BBB", 3);
+console.log(prueba.obtenerInformacionProducto("AAA"));
+console.log(prueba.obtenerCarrito());
+prueba.restarUnidad("BBB");
+prueba.actualizarUnidades("AAA", -5);
+console.log(prueba.obtenerCarrito());
+prueba.actualizarUnidades("ZZZ", 1);
