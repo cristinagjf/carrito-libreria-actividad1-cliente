@@ -180,7 +180,7 @@ function pintarProductos() {
         const botonMas = document.createElement("button");
         botonMas.className = "boton-cantidad";
         botonMas.innerText = "+";
-        botonMas.onclick = function () { ////al hacer clic, la clase suma 1 y actualizamos la fila
+        botonMas.onclick = function () { //al hacer clic, la clase suma 1 y actualizamos la fila
             carrito.sumarUnidad(producto.sku);
             actualizarProducto(producto.sku);
         };
@@ -216,6 +216,39 @@ function actualizarProducto(sku) {
 
     inputCantidad.value = informacion.quantity; //cambia lo que muestyra un input
     celdaSubtotal.innerText = informacion.subtotal.toFixed(2) + carrito.moneda; // cambia el texto de cualquier otro elemento
+    actualizarResumen(); //cada cambio en una fila actualiza también la cesta y el TOTAL
+}
+
+// Repinta la lista de la cesta (aside) y el TOTAL
+function actualizarResumen() {
+    const datosCarrito = carrito.obtenerCarrito(); //trae solo los libros con unidades y el total calculado: la función solo los pinta
+
+    resumen.replaceChildren(); //borra las líneas anteriores para que no se vayan acumulando en cada clic
+
+    //if-else: si no hay libros, "Tu cesta está vacía". Si hay, un <li> por libro con dos <span> (texto a la izquierda, importe a la derecha)
+    if (datosCarrito.products.length === 0) {
+        const lineaVacia = document.createElement("li");
+        lineaVacia.innerText = "Tu cesta está vacía... No dejes para mañana lo que puedas leer hoy";
+        resumen.appendChild(lineaVacia);
+    } else {
+        for (let i = 0; i < datosCarrito.products.length; i++) {
+            const producto = datosCarrito.products[i];
+            const linea = document.createElement("li");
+
+            const texto = document.createElement("span");
+            texto.innerText = producto.quantity + " x " + producto.title;
+
+            const importe = document.createElement("span");
+            importe.innerText = producto.subtotal.toFixed(2) + datosCarrito.currency;
+
+            linea.appendChild(texto);
+            linea.appendChild(importe);
+            resumen.appendChild(linea);
+        }
+    }
+
+    total.innerText = datosCarrito.total + datosCarrito.currency;
+    console.log(datosCarrito); //muestra en la consola el objeto del enunciado en cada cambio (para depurar y ver que obtenerCarrito está OK)
 }
 
 //Función inicializar: async hace que la página siga cargando mientras esperamos
@@ -230,9 +263,9 @@ async function inicializar() {
 
         const datos = await respuesta.json(); //convierte la respuesta en un objeto de JavaScript. Ahora datos.products es el array de libros y datos.currency es €
         console.log(datos);
-
         carrito = new Carrito(datos.products, datos.currency);
         pintarProductos(); //pinta una fila por cada libro
+        actualizarResumen(); //al cargar muestra la cesta vacía y TOTAL 0.00€
         console.log(carrito);
 
         estado.innerText = 'Libros cargados: ' + carrito.productos.length; //modificación del DOM para cambiar el texto "Cargamdo libros..."
