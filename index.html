@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Librería Páginas</title>
+    <!--conectamos la piel, el CSS:-->
+    <link rel="stylesheet" href="css/estilos.css" 
+</head>
+<body>
+    <header class="cabecera">
+        <h1>Librería Páginas</h1>
+    </header>
+
+    <main class="contenedor">
+
+        <!--Listado de libros que llegan de la API: la parte central (libros) y el lateral (la cesta)-->
+        <section class="productos">
+            <table class="tabla">
+                <thead>
+                    <tr>
+                        <th>Libro</th>
+                        <th>cantidad</th>
+                        <th>P.Unidad</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <!--Esto lo rellenerá JavaScript creando un <li> por cada libro de la cesta, por eso se deja vacío-->
+                <tbody id="productos"></tbody>
+            </table>
+        </section>
+        <!--Aside: para el resumen del carrito-->
+        <aside class="carrito">
+            <h2>Tu cesta</h2>
+            <!--Igual que el tbody, también se rellena y se deja por eso vacío-->
+            <ul id="resumen" class="resumen"></ul>
+            <div class="linea-total">
+                <span>TOTAL</span>
+                <span id="total">0.00€</span>
+            </div>
+            <button id="botonVaciar" class="boton-vaciar">Vaciarcesta</button>
+            <p id="estado" class="estado">Cargando libros...</p>
+        </aside>
+    </main>
+    <!--Al final del body, cuando se ejecuta el script, todos los elementos de arriba existen y findById los encuentra-->
+    <script src="js/script.js"></script>
+    
+</body>
+</html>
