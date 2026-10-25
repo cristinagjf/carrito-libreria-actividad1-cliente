@@ -110,3 +110,48 @@ class Carrito {
     }
 
 }
+
+//CONECTAMOS CON EL HTML Y PEDIMOS LOS LIBROS A LA API
+
+// URL de la API ("api.php")
+const URL_API = "api.php";
+
+// Elementos del HTML con los que vamos a trabajar: const porque la referencia al elemento no cambia aunque sí cambiemos su contenido:
+const tablaProductos = document.getElementById("productos"); //busca en el HTML el elemento con id="productos" (el <tbody>) y lo guarda en una constante. (Texto coincide exactamente con el id del HTML)
+const resumen = document.getElementById("resumen");
+const total = document.getElementById("total");
+const estado = document.getElementById("estado");
+const botonVaciar = document.getElementById("botonVaciar");
+
+// El carrito se crea cuando lleguen los datos al responder la API
+let carrito = null;
+
+//Función inicializar: async hace que la página siga cargando mientras esperamos
+async function inicializar() {
+    //hacemos try-catch para que si algo falla, salte al catch y muestre un mensaje en vez de romperse
+    try {
+        const respuesta = await fetch(URL_API);
+
+        if (!respuesta.ok) { //código: 200 ok, 404 no existe, 500 error del servidor
+            throw new Error('Error HTTP ' + respuesta.status); //si no existe lanzamos error para ir al catch
+        }
+
+        const datos = await respuesta.json(); //convierte la respuesta en un objeto de JavaScript. Ahora datos.products es el array de libros y datos.currency es €
+        console.log(datos);
+
+        carrito = new Carrito(datos.products, datos.currency);
+        console.log(carrito);
+
+        estado.innerText = 'Libros cargados: ' + carrito.productos.length; //modificación del DOM para cambiar el texto "Cargamdo libros..."
+
+    } catch (error) {
+        console.log(error);
+        estado.innerText = 'No se han podido cargar los libros';
+        botonVaciar.disabled = true;
+    }
+}
+
+inicializar(); //única línea que se ejecuta sola al cargar
+
+//PINTAR LOS LIBROS EN LA TABLA (Crear nuevos elementos en el DOM: listado de productos)
+
